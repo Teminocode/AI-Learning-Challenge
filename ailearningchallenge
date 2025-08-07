@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30-Day AI Learning Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .skill-card { transition: all 0.3s ease; }
+        .skill-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .completed { opacity: 0.7; background-color: #f0f9ff; }
+        .progress-bar { transition: width 0.5s ease; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="gradient-bg text-white py-12">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h1 class="text-4xl font-bold mb-4">🤖 30-Day AI Learning Challenge</h1>
+            <p class="text-xl opacity-90">Master AI skills one day at a time</p>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-6 py-8">
+        <!-- Level Selection -->
+        <div id="levelSelection" class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Choose Your Learning Level</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <button onclick="generateChallenge('beginner')" class="level-btn bg-green-500 hover:bg-green-600 text-white p-6 rounded-lg transition-colors">
+                    <div class="text-3xl mb-2">🌱</div>
+                    <h3 class="text-xl font-semibold mb-2">Beginner</h3>
+                    <p class="text-sm opacity-90">New to AI? Start here with fundamentals</p>
+                </button>
+                <button onclick="generateChallenge('intermediate')" class="level-btn bg-blue-500 hover:bg-blue-600 text-white p-6 rounded-lg transition-colors">
+                    <div class="text-3xl mb-2">🚀</div>
+                    <h3 class="text-xl font-semibold mb-2">Intermediate</h3>
+                    <p class="text-sm opacity-90">Ready to dive deeper into AI concepts</p>
+                </button>
+                <button onclick="generateChallenge('advanced')" class="level-btn bg-purple-500 hover:bg-purple-600 text-white p-6 rounded-lg transition-colors">
+                    <div class="text-3xl mb-2">🎯</div>
+                    <h3 class="text-xl font-semibold mb-2">Advanced</h3>
+                    <p class="text-sm opacity-90">Master complex AI implementations</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- Challenge Content -->
+        <div id="challengeContent" class="hidden">
+            <!-- Progress Bar -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Your Progress</h3>
+                    <span id="progressText" class="text-sm text-gray-600">0/30 completed</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div id="progressBar" class="progress-bar bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="text-center mb-6">
+                <button onclick="resetChallenge()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors">
+                    Choose Different Level
+                </button>
+            </div>
+
+            <!-- Skills List -->
+            <div id="skillsList" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        const challenges = {
+            beginner: [
+                { skill: "What is Artificial Intelligence?", description: "Learn the basic definition and history of AI", link: "https://www.ibm.com/topics/artificial-intelligence" },
+                { skill: "Types of AI Systems", description: "Understand narrow AI, general AI, and superintelligence", link: "https://builtin.com/artificial-intelligence/types-of-artificial-intelligence" },
+                { skill: "Machine Learning Basics", description: "Introduction to ML and how it relates to AI", link: "https://www.coursera.org/learn/machine-learning-course" },
+                { skill: "AI in Daily Life", description: "Discover AI applications you use every day", link: "https://www.forbes.com/sites/bernardmarr/2018/12/17/the-10-best-examples-of-how-ai-is-already-used-in-our-everyday-life/" },
+                { skill: "Understanding Data", description: "Why data is crucial for AI systems", link: "https://www.kdnuggets.com/2019/05/data-science-ai-machine-learning-deep-learning.html" },
+                { skill: "Supervised Learning", description: "Learn about training AI with labeled examples", link: "https://www.javatpoint.com/supervised-machine-learning" },
+                { skill: "Unsupervised Learning", description: "Discover how AI finds patterns without labels", link: "https://www.javatpoint.com/unsupervised-machine-learning" },
+                { skill: "Neural Networks Intro", description: "Basic understanding of how neural networks work", link: "https://www.3blue1brown.com/topics/neural-networks" },
+                { skill: "AI Ethics Basics", description: "Introduction to ethical considerations in AI", link: "https://www.unesco.org/en/artificial-intelligence/recommendation-ethics" },
+                { skill: "Natural Language Processing", description: "How AI understands and processes human language", link: "https://www.ibm.com/topics/natural-language-processing" },
+                { skill: "Computer Vision Basics", description: "How AI 'sees' and interprets images", link: "https://www.ibm.com/topics/computer-vision" },
+                { skill: "AI vs Human Intelligence", description: "Compare artificial and human intelligence", link: "https://builtin.com/artificial-intelligence/artificial-intelligence-vs-human-intelligence" },
+                { skill: "Popular AI Tools", description: "Explore beginner-friendly AI tools and platforms", link: "https://www.zapier.com/blog/best-ai-tools/" },
+                { skill: "ChatGPT and Language Models", description: "Understanding conversational AI systems", link: "https://openai.com/blog/chatgpt" },
+                { skill: "AI in Healthcare", description: "How AI is transforming medical diagnosis and treatment", link: "https://www.who.int/publications/i/item/ethics-and-governance-of-artificial-intelligence-for-health" },
+                { skill: "AI in Transportation", description: "Self-driving cars and smart transportation systems", link: "https://www.mckinsey.com/industries/automotive-and-assembly/our-insights/autonomous-drivings-future" },
+                { skill: "Bias in AI Systems", description: "Understanding and identifying AI bias", link: "https://www.brookings.edu/research/algorithmic-bias-detection-and-mitigation/" },
+                { skill: "Training vs Testing Data", description: "How AI systems learn and are evaluated", link: "https://machinelearningmastery.com/difference-test-validation-datasets/" },
+                { skill: "AI Job Market", description: "Career opportunities in artificial intelligence", link: "https://www.indeed.com/career-advice/finding-a-job/ai-jobs" },
+                { skill: "Overfitting and Underfitting", description: "Common problems in AI model training", link: "https://www.ibm.com/topics/overfitting" },
+                { skill: "AI Model Accuracy", description: "How to measure if an AI system is working well", link: "https://developers.google.com/machine-learning/crash-course/classification/accuracy" },
+                { skill: "Deep Learning Introduction", description: "Understanding deep neural networks", link: "https://www.ibm.com/topics/deep-learning" },
+                { skill: "AI Hardware Requirements", description: "Computing power needed for AI systems", link: "https://www.nvidia.com/en-us/deep-learning-ai/solutions/" },
+                { skill: "Open Source AI", description: "Free AI tools and libraries available to everyone", link: "https://opensource.com/article/20/8/open-source-machine-learning-tools" },
+                { skill: "AI Safety Basics", description: "Ensuring AI systems are safe and reliable", link: "https://www.safe.ai/ai-safety-intro" },
+                { skill: "Future of AI", description: "Predictions and trends in artificial intelligence", link: "https://www.weforum.org/agenda/2023/05/future-of-ai-artificial-intelligence/" },
+                { skill: "Getting Started with AI", description: "Your next steps to continue learning AI", link: "https://www.coursera.org/articles/how-to-learn-ai" },
+                { skill: "AI Communities", description: "Join online communities to continue your AI journey", link: "https://www.reddit.com/r/MachineLearning/" },
+                { skill: "Building Your First AI Project", description: "Simple project ideas for AI beginners", link: "https://www.projectpro.io/article/machine-learning-projects-for-beginners/397" },
+                { skill: "Celebrating Your Progress", description: "Reflect on your 30-day AI learning journey", link: "https://www.linkedin.com/advice/0/how-do-you-track-measure-your-learning-progress" }
+            ],
+            intermediate: [
+                { skill: "Advanced Neural Networks", description: "Deep dive into CNN, RNN, and LSTM architectures", link: "https://www.deeplearningbook.org/" },
+                { skill: "TensorFlow Fundamentals", description: "Build your first neural network with TensorFlow", link: "https://www.tensorflow.org/tutorials" },
+                { skill: "PyTorch Basics", description: "Alternative deep learning framework exploration", link: "https://pytorch.org/tutorials/" },
+                { skill: "Feature Engineering", description: "Transform raw data into meaningful AI inputs", link: "https://www.kaggle.com/learn/feature-engineering" },
+                { skill: "Model Evaluation Metrics", description: "Precision, recall, F1-score, and ROC curves", link: "https://scikit-learn.org/stable/modules/model_evaluation.html" },
+                { skill: "Cross-Validation Techniques", description: "Robust methods for testing model performance", link: "https://machinelearningmastery.com/k-fold-cross-validation/" },
+                { skill: "Hyperparameter Tuning", description: "Optimize your models for better performance", link: "https://www.kaggle.com/learn/intro-to-machine-learning" },
+                { skill: "Ensemble Methods", description: "Combine multiple models for better predictions", link: "https://scikit-learn.org/stable/modules/ensemble.html" },
+                { skill: "Transfer Learning", description: "Use pre-trained models for your specific tasks", link: "https://www.tensorflow.org/tutorials/images/transfer_learning" },
+                { skill: "Generative Adversarial Networks", description: "Create new data with GANs", link: "https://developers.google.com/machine-learning/gan" },
+                { skill: "Natural Language Processing with BERT", description: "Advanced text processing with transformer models", link: "https://huggingface.co/docs/transformers/model_doc/bert" },
+                { skill: "Computer Vision with OpenCV", description: "Image processing and analysis techniques", link: "https://opencv.org/courses/" },
+                { skill: "Time Series Forecasting", description: "Predict future values from historical data", link: "https://www.tensorflow.org/tutorials/structured_data/time_series" },
+                { skill: "Reinforcement Learning Basics", description: "Train AI agents through trial and error", link: "https://spinningup.openai.com/en/latest/" },
+                { skill: "Model Deployment with Flask", description: "Create web APIs for your AI models", link: "https://flask.palletsprojects.com/en/2.3.x/tutorial/" },
+                { skill: "Docker for AI Projects", description: "Containerize your machine learning applications", link: "https://docs.docker.com/get-started/" },
+                { skill: "MLOps Fundamentals", description: "Manage the lifecycle of ML models in production", link: "https://ml-ops.org/" },
+                { skill: "A/B Testing for AI", description: "Test different models in production environments", link: "https://www.optimizely.com/optimization-glossary/ab-testing/" },
+                { skill: "Data Pipeline Design", description: "Build robust data processing workflows", link: "https://airflow.apache.org/docs/apache-airflow/stable/tutorial.html" },
+                { skill: "Model Interpretability", description: "Understand and explain AI decision-making", link: "https://christophm.github.io/interpretable-ml-book/" },
+                { skill: "Handling Imbalanced Datasets", description: "Deal with uneven class distributions", link: "https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/" },
+                { skill: "Dimensionality Reduction", description: "PCA, t-SNE, and UMAP for data visualization", link: "https://scikit-learn.org/stable/modules/decomposition.html" },
+                { skill: "Anomaly Detection", description: "Identify unusual patterns in your data", link: "https://scikit-learn.org/stable/modules/outlier_detection.html" },
+                { skill: "Graph Neural Networks", description: "AI for network and relationship data", link: "https://pytorch-geometric.readthedocs.io/en/latest/" },
+                { skill: "Edge AI and Mobile Deployment", description: "Run AI models on mobile devices and IoT", link: "https://www.tensorflow.org/lite" },
+                { skill: "AI Model Monitoring", description: "Track model performance in production", link: "https://www.evidentlyai.com/ml-monitoring" },
+                { skill: "Advanced Optimization", description: "Gradient descent variants and optimization tricks", link: "https://ruder.io/optimizing-gradient-descent/" },
+                { skill: "Multi-modal AI", description: "Combine text, image, and audio processing", link: "https://huggingface.co/docs/transformers/model_doc/clip" },
+                { skill: "AI Research Paper Analysis", description: "Read and understand cutting-edge AI research", link: "https://arxiv.org/list/cs.AI/recent" },
+                { skill: "Building an AI Portfolio", description: "Showcase your intermediate AI skills and projects", link: "https://towardsdatascience.com/how-to-build-a-data-science-portfolio-5f566517c79c" }
+            ],
+            advanced: [
+                { skill: "Transformer Architecture Deep Dive", description: "Implement attention mechanisms from scratch", link: "https://arxiv.org/abs/1706.03762" },
+                { skill: "Custom Loss Functions", description: "Design specialized loss functions for unique problems", link: "https://www.tensorflow.org/api_docs/python/tf/keras/losses" },
+                { skill: "Advanced GANs", description: "StyleGAN, CycleGAN, and conditional generation", link: "https://arxiv.org/abs/1912.04958" },
+                { skill: "Meta-Learning", description: "Train models that learn how to learn", link: "https://arxiv.org/abs/1703.03400" },
+                { skill: "Neural Architecture Search", description: "Automatically design optimal neural networks", link: "https://arxiv.org/abs/1808.05377" },
+                { skill: "Federated Learning", description: "Train models across distributed data sources", link: "https://arxiv.org/abs/1602.05629" },
+                { skill: "Adversarial Attacks & Defense", description: "Understand and protect against AI vulnerabilities", link: "https://arxiv.org/abs/1412.6572" },
+                { skill: "Quantum Machine Learning", description: "Explore quantum computing for AI applications", link: "https://www.nature.com/articles/nature23474" },
+                { skill: "Advanced Reinforcement Learning", description: "PPO, A3C, and multi-agent systems", link: "https://arxiv.org/abs/1707.06347" },
+                { skill: "Causal Inference in AI", description: "Move beyond correlation to understand causation", link: "https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/" },
+                { skill: "Large Language Model Fine-tuning", description: "Customize GPT-style models for specific tasks", link: "https://huggingface.co/docs/transformers/training" },
+                { skill: "Distributed Training", description: "Scale model training across multiple GPUs/nodes", link: "https://pytorch.org/tutorials/intermediate/ddp_tutorial.html" },
+                { skill: "Model Compression", description: "Pruning, quantization, and knowledge distillation", link: "https://arxiv.org/abs/1503.02531" },
+                { skill: "Advanced Computer Vision", description: "Object detection, segmentation, and 3D vision", link: "https://arxiv.org/abs/1506.01497" },
+                { skill: "Graph Convolutional Networks", description: "Deep learning on irregular graph structures", link: "https://arxiv.org/abs/1609.02907" },
+                { skill: "Variational Autoencoders", description: "Probabilistic generative models and latent spaces", link: "https://arxiv.org/abs/1312.6114" },
+                { skill: "Advanced NLP: BERT Variants", description: "RoBERTa, ALBERT, DeBERTa implementation", link: "https://arxiv.org/abs/1907.11692" },
+                { skill: "Multi-Task Learning", description: "Train single models for multiple objectives", link: "https://arxiv.org/abs/1706.05098" },
+                { skill: "Continual Learning", description: "Models that learn without forgetting", link: "https://arxiv.org/abs/1909.08383" },
+                { skill: "Advanced Optimization", description: "Second-order methods and adaptive learning rates", link: "https://arxiv.org/abs/1412.6980" },
+                { skill: "Probabilistic Programming", description: "Bayesian deep learning with PyMC3/Stan", link: "https://docs.pymc.io/" },
+                { skill: "AI Safety & Alignment", description: "Ensure AI systems behave as intended", link: "https://arxiv.org/abs/1606.06565" },
+                { skill: "Custom CUDA Kernels", description: "Optimize GPU computations for AI workloads", link: "https://developer.nvidia.com/how-to-cuda-c-cpp" },
+                { skill: "Advanced MLOps", description: "Kubernetes, model versioning, and CI/CD for ML", link: "https://ml-ops.org/content/mlops-principles" },
+                { skill: "Research Paper Implementation", description: "Reproduce state-of-the-art research results", link: "https://paperswithcode.com/" },
+                { skill: "AI System Architecture", description: "Design scalable AI infrastructure and pipelines", link: "https://www.oreilly.com/library/view/designing-machine-learning/9781098107956/" },
+                { skill: "Advanced Evaluation Metrics", description: "Custom metrics for complex AI applications", link: "https://arxiv.org/abs/2006.04904" },
+                { skill: "Multimodal Foundation Models", description: "Build and fine-tune large multimodal models", link: "https://arxiv.org/abs/2103.00020" },
+                { skill: "AI Research Methodology", description: "Design experiments and contribute to AI research", link: "https://www.nature.com/articles/s42256-021-00307-0" },
+                { skill: "Advanced AI Leadership", description: "Lead AI teams and drive organizational AI strategy", link: "https://hbr.org/2019/07/building-the-ai-powered-organization" }
+            ]
+        };
+
+        let currentLevel = '';
+        let completedSkills = new Set();
+
+        function generateChallenge(level) {
+            currentLevel = level;
+            completedSkills.clear();
+            
+            document.getElementById('levelSelection').classList.add('hidden');
+            document.getElementById('challengeContent').classList.remove('hidden');
+            
+            const skillsList = document.getElementById('skillsList');
+            skillsList.innerHTML = '';
+            
+            challenges[level].forEach((challenge, index) => {
+                const skillCard = createSkillCard(challenge, index + 1);
+                skillsList.appendChild(skillCard);
+            });
+            
+            updateProgress();
+        }
+
+        function createSkillCard(challenge, day) {
+            const card = document.createElement('div');
+            card.className = 'skill-card bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500';
+            card.innerHTML = `
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <input type="checkbox" id="skill-${day}" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" onchange="toggleSkill(${day})">
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-gray-800">Day ${day}: ${challenge.skill}</h3>
+                            <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                ${currentLevel.charAt(0).toUpperCase() + currentLevel.slice(1)}
+                            </span>
+                        </div>
+                        <p class="text-gray-600 mb-3">${challenge.description}</p>
+                        <a href="${challenge.link}" target="_blank" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                            📚 Learn More
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function toggleSkill(day) {
+            const checkbox = document.getElementById(`skill-${day}`);
+            const card = checkbox.closest('.skill-card');
+            
+            if (checkbox.checked) {
+                completedSkills.add(day);
+                card.classList.add('completed');
+            } else {
+                completedSkills.delete(day);
+                card.classList.remove('completed');
+            }
+            
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const total = 30;
+            const completed = completedSkills.size;
+            const percentage = (completed / total) * 100;
+            
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+            document.getElementById('progressText').textContent = `${completed}/${total} completed`;
+        }
+
+        function resetChallenge() {
+            document.getElementById('levelSelection').classList.remove('hidden');
+            document.getElementById('challengeContent').classList.add('hidden');
+            completedSkills.clear();
+            currentLevel = '';
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96ba5b2ac35d2d4a',t:'MTc1NDYwNzI2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
